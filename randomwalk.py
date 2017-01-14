@@ -1,8 +1,8 @@
 import random as r
 def getwalk(n):
     arr = [[0,0]]
-    for i in range(0,n):
-        lastpos = arr[i]
+    for _ in range(n):
+        lastpos = arr[-1]
         lastpos[r.randint(0,1)] += [-1,1][r.randint(0,1)]
-        arr += [lastpos]
+        arr.append(lastpos)
     return arr
