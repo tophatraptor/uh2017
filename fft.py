@@ -1,4 +1,4 @@
-from pylab import plot, show, title, xlabel, ylabel, subplot, savefig
+from pylab import *
 from scipy import fft, arange, ifft
 from numpy import sin, linspace, pi
 from scipy.io.wavfile import read, write
@@ -6,22 +6,22 @@ from scipy.io.wavfile import read, write
 
 
 def plotSpec(y,Fs):
-    n = len(y) 
+    n = len(y)
     k = arange(n)
     T = n/Fs
-    frq = k/T 
-    frq = frq[range(n//2)] 
+    frq = k/T
+    frq = frq[range(n//2)]
 
-    Y = fft(y)/n 
+    Y = fft(y)/n
     Y = Y[range(n//2)]
- 
-    plot(frq,abs(Y),'r') 
+
+    plot(frq,abs(Y),'r')
     xlabel('Freq (Hz)')
     ylabel('|Y(freq)|')
 
 
 Fs = 150
-
+rcParams['agg.path.chunksize'] = 10000
 rate,data=read('pps.wav')
 y=data[:,1]
 timp=len(y)/150.
