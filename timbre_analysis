@@ -21,6 +21,7 @@ def file_to_data(filepath):
 #into usable data.
 def line_to_data(str):
     datapoints = str.split()
+    datapoints = datapoints[1:]
     new_datapoints = []
     #frame_num = datapoints[0]
     for datapoint in datapoints:
