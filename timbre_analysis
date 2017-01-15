@@ -1,0 +1,85 @@
+#!/usr/bin/env python3
+
+import math as m
+
+SONG_LENGTH = 198
+FRAME_RATE = 60
+
+def file_to_data(filepath):
+    f = open(filepath, 'r')
+    frametable = []
+    while True:
+        line = f.readline()
+        if not line:
+            break
+        frametable.append(line_to_data(line))
+    f.close()
+    return frametable
+
+#auxiliary for file_to_data
+#converts a string of a line, take to be of the format:
+#      "(freq,ampl) (freq,ampl) (freq,ampl) (freq,ampl) (freq,ampl)"
+#into usable data.
+def line_to_data(str):
+    datapoints = str.split()
+    datapoints = datapoints[1:]
+    new_datapoints = []
+    #frame_num = datapoints[0]
+    for datapoint in datapoints:
+        split_data = datapoint[1:-1].split(',')
+        new_datapoints.append((float(split_data[0]), float(split_data[1])))
+    return new_datapoints
+
+
+#def pitch_to_color(arr):
+
+#from a five entry array of (freq,ampl) pairs, returns an R value, G value, and B value.
+def get_timbre_rgb(arr):
+    loud_arr = sorted(arr, key=lambda x: x[1], reverse=True)
+    pitch_arr = sorted(arr, key=lambda x: x[0], reverse=False)
+
+    fundamental = loud_arr[0]
+    secondary = loud_arr[1]
+    softest = loud_arr[-1]
+
+    lowest = pitch_arr[0]
+    next_low = pitch_arr[1]
+    highest = pitch_arr[-1]
+
+    apparent_pitch_scaled = m.log(fundamental[0], 2)
+    max_pitch_scaled = m.log(5000, 2)
+
+    red_influencer = 1 - (apparent_pitch_scaled / max_pitch_scaled)
+            #loudest, by pitch
+    green_influencer = (secondary[1] - fundamental[1]) / (softest[1] - fundamental[1])
+            #loudest, by loud
+    blue_influencer = lowest[0] / next_low[0]
+            #pitchest, by pitch
+
+    red = 255 * red_influencer
+    green = 255 * green_influencer
+    blue = 255 * blue_influencer
+
+    return (red, green, blue)
+
+#takes a file of fourier data and turns into an array of the appropriate amounts of rgb data.
+def main(filepath):
+    data = file_to_data(filepath)
+    frame_interval = len(data) / (SONG_LENGTH * FRAME_RATE)
+
+    rgbs = []
+    for i in range(len(data)):
+        if i % frame_interval == 0:
+            rgbs.append(get_timbre_rgb(data[i]))
+
+    for i in range(len(rgbs)):
+        rgb = rgbs[i]
+        print("{} {},{},{}".format(i+1,rgb[0], rgb[1], rgb[2]))
+
+main("./spectrums")
+
+#delta frequency (primary-last)           - high: Green
+#     divby delta freq (primary-secondary)
+#
+# fundamental                              - hue (K factor)
+# delta amplitude (primary-secondary)      - high: Blue
