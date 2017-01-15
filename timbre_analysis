@@ -42,7 +42,9 @@ def get_timbre_rgb(arr):
     next_low = pitch_arr[1]
     highest = pitch_arr[-1]
 
-    red_influencer = 1 - (((m.log(fundamental[0], 10) - m.log(15, 10)) / (m.log(5000, 10) - m.log(15, 10))))
+    apparent_pitch_scaled = m.log(fundamental[0], 2)
+    max_pitch_scaled = m.log(5000, 2)
+    red_influencer = 1 - (apparent_pitch_scaled / max_pitch_scaled)
             #loudest, by pitch
 
     green_influencer = (secondary[1] - fundamental[1]) / (softest[1] - fundamental[1])
@@ -71,7 +73,7 @@ def main(filepath):
 
     print(rgbs)
 
-main("./data.tsv")
+main("./spectrums")
 
 #delta frequency (primary-last)           - high: Green
 #     divby delta freq (primary-secondary)
