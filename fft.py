@@ -1,48 +1,34 @@
 from pylab import plot, show, title, xlabel, ylabel, subplot, savefig
-from scipy import fft, arange, ifft
-from numpy import sin, linspace, pi
 from scipy.io.wavfile import read, write
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
+import pylab
+import numpy
+import matplotlib.image as mpimg
 
 
-def plotSpec(y,Fs):
-    n = len(y) 
-    k = arange(n)
-    T = n/Fs
-    frq = k/T 
-    frq = frq[range(n//2)] 
-
-    Y = fft(y)/n 
-    Y = Y[range(n//2)]
- 
-    plot(frq,abs(Y),'r') 
-    xlabel('Freq (Hz)')
-    ylabel('|Y(freq)|')
+numpy.set_printoptions(threshold=numpy.nan)
+rate,data = read('ds.wav')
+spectrum, freqs, t, im = plt.specgram(data[:,1], NFFT=200, Fs=44100, noverlap=100)
 
 
-Fs = 150
+i = 1
+numpy.savetxt('./ds-heat/t.txt', t)
+numpy.savetxt('./ds-heat/freqs.txt', freqs)
+for row in spectrum:
+    name = './ds-heat/heat' + str(i) + '.txt'
+    numpy.savetxt(name, row)
+    i += 1
 
-rate,data=read('pps.wav')
-y=data[:,1]
-timp=len(y)/150.
-t=linspace(0,timp,len(y))
 
-subplot(2,1,1)
-plot(t,y)
-xlabel('Time')
-ylabel('Amplitude')
-subplot(2,1,2)
-plotSpec(y,Fs)
-show()
+maxes = numpy.amax(spectrum, axis=0)
+inds = numpy.argmax(spectrum, axis=0)
+numpy.savetxt('./maxes.txt', maxes)
+numpy.savetxt('./inds.txt', inds)
 
-"""
-rate,data = read('pps.wav')
 
-y = data[:,1]
-print(y)
-
-F = fft(y) / (len(y))
-print(F)
-#plt.plot(y)
-#plt.show()
-"""
+maxes = numpy.amax(spectrum, axis=0)
+inds = numpy.argmax(spectrum, axis=0)
+numpy.savetxt('./maxes.txt', maxes)
+numpy.savetxt('./inds.txt', inds)
+plt.show()
+plt.savefig('heat.png')
