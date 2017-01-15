@@ -1,8 +1,13 @@
-import random as r
-def getwalk(n):
-    arr = [[0,0]]
-    for _ in range(n):
-        lastpos = arr[-1]
-        lastpos[r.randint(0,1)] += [-1,1][r.randint(0,1)]
-        arr.append(lastpos)
-    return arr
+def random_walk(num_steps):
+    steps = [(0,0)]
+    for i in range(num_steps):
+        val = random.randint(0,3)
+        if val==0:
+            steps.append((steps[-1][0],steps[-1][1]+1))
+        elif val==1:
+            steps.append((steps[-1][0]+1,steps[-1][1]))
+        elif val==2:
+            steps.append((steps[-1][0],steps[-1][1]-1))
+        elif val==3:
+            steps.append((steps[-1][0]-1,steps[-1][1]+1))
+    return steps
